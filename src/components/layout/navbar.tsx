@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -50,10 +51,12 @@ export default function Navbar() {
                 <span className="hidden sm:inline">{user.email}</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel className="font-normal">
-                  <p className="text-xs text-muted-foreground">Signed in as</p>
-                  <p className="truncate text-sm font-medium">{user.email}</p>
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="font-normal">
+                    <p className="text-xs text-muted-foreground">Signed in as</p>
+                    <p className="truncate text-sm font-medium">{user.email}</p>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => router.push(dashboardPathForRole(user.role as Role))}
