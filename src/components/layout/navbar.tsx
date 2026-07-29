@@ -73,10 +73,10 @@ export default function Navbar() {
             </DropdownMenu>
           ) : (
             <>
-              <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/login" />}>
+              <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/auth/login" />}>
                 Log in
               </Button>
-              <Button variant="default" size="sm" nativeButton={false} render={<Link href="/signup" />}>
+              <Button variant="default" size="sm" nativeButton={false} render={<Link href="/auth/register" />}>
                 Sign up
               </Button>
             </>

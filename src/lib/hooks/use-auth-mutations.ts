@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api-client"
-import { setAuthToken } from "@/lib/auth"
+import { setAuthToken, setRefreshToken } from "@/lib/auth"
 import type { RegisterInput, LoginInput } from "@/lib/schemas/auth"
 import type { User } from "@/types"
 
@@ -25,6 +25,9 @@ export function useRegister() {
       if (data?.accessToken) {
         setAuthToken(data.accessToken)
       }
+      if (data?.refreshToken) {
+        setRefreshToken(data.refreshToken)
+      }
     },
   })
 }
@@ -36,6 +39,9 @@ export function useLogin() {
     onSuccess: (data) => {
       if (data?.accessToken) {
         setAuthToken(data.accessToken)
+      }
+      if (data?.refreshToken) {
+        setRefreshToken(data.refreshToken)
       }
     },
   })

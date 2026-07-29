@@ -32,6 +32,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${sora.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="flex min-h-screen flex-col">
         <ThemeProvider forcedTheme="light" disableTransitionOnChange>
