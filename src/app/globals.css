@@ -8,8 +8,10 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+
+  --font-display: var(--font-display);
+  --font-heading: var(--font-display);
+  --font-mono: var(--font-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -27,6 +29,9 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -46,41 +51,68 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-status-placed-bg: var(--status-placed-bg);
+  --color-status-placed-fg: var(--status-placed-fg);
+  --color-status-confirmed-bg: var(--status-confirmed-bg);
+  --color-status-confirmed-fg: var(--status-confirmed-fg);
+  --color-status-paid-bg: var(--status-paid-bg);
+  --color-status-paid-fg: var(--status-paid-fg);
+  --color-status-picked-up-bg: var(--status-picked-up-bg);
+  --color-status-picked-up-fg: var(--status-picked-up-fg);
+  --color-status-returned-bg: var(--status-returned-bg);
+  --color-status-returned-fg: var(--status-returned-fg);
+  --color-status-cancelled-bg: var(--status-cancelled-bg);
+  --color-status-cancelled-fg: var(--status-cancelled-fg);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --background: #F1F3EE;
+  --foreground: #182018;
+  --card: #FFFFFF;
+  --card-foreground: #182018;
+  --popover: #FFFFFF;
+  --popover-foreground: #182018;
+  --primary: #1F4032;
+  --primary-foreground: #F1F3EE;
+  --primary-hover: #163024;
+  --secondary: #E3E9DC;
+  --secondary-foreground: #1F4032;
+  --muted: #E7E9E1;
+  --muted-foreground: #5B6558;
+  --accent: #E2812A;
+  --accent-foreground: #241203;
+  --accent-hover: #C86E1E;
+  --destructive: #C4432E;
+  --destructive-foreground: #FBEFEA;
+  --border: #D7DCCC;
+  --input: #D7DCCC;
+  --ring: #1F4032;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --chart-1: #1F4032;
+  --chart-2: #5B6558;
+  --chart-3: #8B958E;
+  --chart-4: #E2812A;
+  --chart-5: #C4432E;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #182018;
+  --sidebar-primary: #1F4032;
+  --sidebar-primary-foreground: #F1F3EE;
+  --sidebar-accent: #E2812A;
+  --sidebar-accent-foreground: #241203;
+  --sidebar-border: #D7DCCC;
+  --sidebar-ring: #1F4032;
+  --status-placed-bg: #FEF3C7;
+  --status-placed-fg: #92400E;
+  --status-confirmed-bg: #DBEAFE;
+  --status-confirmed-fg: #1E40AF;
+  --status-paid-bg: #EDE9FE;
+  --status-paid-fg: #5B21B6;
+  --status-picked-up-bg: #D1FAE5;
+  --status-picked-up-fg: #065F46;
+  --status-returned-bg: #F3F4F6;
+  --status-returned-fg: #4B5563;
+  --status-cancelled-bg: #FEE2E2;
+  --status-cancelled-fg: #991B1B;
 }
 
 .dark {
@@ -127,4 +159,19 @@
   html {
     @apply font-sans;
   }
+}
+
+@utility contour-bg {
+  background-image: repeating-radial-gradient(
+    circle at 20% 50%,
+    transparent 0,
+    transparent 15px,
+    rgba(31, 64, 50, 0.03) 15px,
+    rgba(31, 64, 50, 0.04) 18px
+  );
+  background-size: 80px 80px;
+}
+
+@utility font-display {
+  font-family: var(--font-display, var(--font-sans));
 }
