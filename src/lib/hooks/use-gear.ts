@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api-client"
-import type { Gear, Category, PaginatedResponse } from "@/types"
+import type { Gear, PaginatedResponse } from "@/types"
 
 export interface GearListParams {
   page?: number
@@ -9,6 +9,8 @@ export interface GearListParams {
   category?: string
   minPrice?: string
   maxPrice?: string
+  availableFrom?: string
+  availableTo?: string
   sortBy?: string
   sortOrder?: string
 }
@@ -40,10 +42,4 @@ export function useGearDetail(id: string) {
   })
 }
 
-export function useCategories() {
-  return useQuery({
-    queryKey: ["categories"],
-    queryFn: (): Promise<Category[] | null> => apiClient.get<Category[]>("/api/categories"),
-    staleTime: 5 * 60 * 1000,
-  })
-}
+export { useCategories } from "@/lib/hooks/use-categories"
