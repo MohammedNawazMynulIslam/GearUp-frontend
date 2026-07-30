@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useTransition, useCallback } from "react"
+import { useState, useTransition } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -22,70 +22,67 @@ export function GearFilters() {
   const [, startTransition] = useTransition()
   const { data: categories } = useCategories()
 
-  const [formKey, setFormKey] = useState(0)
-  const minPriceRef = useRef<HTMLInputElement>(null)
-  const maxPriceRef = useRef<HTMLInputElement>(null)
-
   const currentCategory = searchParams.get("category") ?? ""
   const currentAvailableFrom = searchParams.get("availableFrom") ?? ""
   const currentAvailableTo = searchParams.get("availableTo") ?? ""
-  const urlMinPrice = searchParams.get("minPrice") ?? ""
-  const urlMaxPrice = searchParams.get("maxPrice") ?? ""
+
+  const [minPrice, setMinPrice] = useState(() => searchParams.get("minPrice") ?? "")
+  const [maxPrice, setMaxPrice] = useState(() => searchParams.get("maxPrice") ?? "")
 
   const hasActiveFilters =
     currentCategory !== "" ||
-    urlMinPrice !== "" ||
-    urlMaxPrice !== "" ||
+    searchParams.has("minPrice") ||
+    searchParams.has("maxPrice") ||
     currentAvailableFrom !== "" ||
     currentAvailableTo !== ""
 
-  const updateURL = useCallback(
-    (updates: Record<string, string | undefined>) => {
-      const params = new URLSearchParams(searchParams.toString())
-      for (const [key, value] of Object.entries(updates)) {
-        if (value === undefined || value === "") {
-          params.delete(key)
-        } else {
-          params.set(key, value)
-        }
-      }
-      params.delete("page")
-      return params.toString()
-    },
-    [searchParams]
-  )
-
-  function replaceURL(qs: string) {
+  function navigate(qs: string) {
     startTransition(() => {
-      router.replace(`${pathname}?${qs}`, { scroll: false })
+      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
     })
   }
 
+  function buildQueryString(key: string, value: string | undefined) {
+    const params = new URLSearchParams(searchParams.toString())
+    if (value === undefined || value === "") {
+      params.delete(key)
+    } else {
+      params.set(key, value)
+    }
+    params.delete("page")
+    return params.toString()
+  }
+
   function handleCategoryChange(value: string | null) {
-    replaceURL(updateURL({ category: !value || value === "all" ? undefined : value }))
+    navigate(buildQueryString("category", !value || value === "all" ? undefined : value))
   }
 
   function handleDateChange(key: string, value: string) {
-    replaceURL(updateURL({ [key]: value || undefined }))
+    navigate(buildQueryString(key, value || undefined))
   }
 
   function handlePriceBlur(key: string) {
-    const value = key === "minPrice"
-      ? minPriceRef.current?.value
-      : maxPriceRef.current?.value
-    replaceURL(updateURL({ [key]: value || undefined }))
+    const value = key === "minPrice" ? minPrice : maxPrice
+    const current = searchParams.get(key) ?? ""
+    if (value === current) return
+    navigate(buildQueryString(key, value || undefined))
   }
 
   function handlePriceKeyDown(key: string, e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
-      handlePriceBlur(key)
+      const value = key === "minPrice" ? minPrice : maxPrice
+      const current = searchParams.get(key) ?? ""
+      if (value !== current) {
+        navigate(buildQueryString(key, value || undefined))
+      }
     }
   }
 
   function clearFilters() {
-    setFormKey((k) => k + 1)
+    setMinPrice("")
+    setMaxPrice("")
     startTransition(() => {
-      router.replace(pathname, { scroll: false })
+      router.push(pathname, { scroll: false })
     })
   }
 
@@ -112,12 +109,11 @@ export function GearFilters() {
         <Label htmlFor="minPrice">Min price</Label>
         <Input
           id="minPrice"
-          key={`minPrice-${formKey}`}
-          ref={minPriceRef}
           type="number"
           min={0}
           placeholder="$0"
-          defaultValue={urlMinPrice}
+          value={minPrice}
+          onChange={(e) => setMinPrice(e.target.value)}
           onBlur={() => handlePriceBlur("minPrice")}
           onKeyDown={(e) => handlePriceKeyDown("minPrice", e)}
           className="w-28"
@@ -128,12 +124,11 @@ export function GearFilters() {
         <Label htmlFor="maxPrice">Max price</Label>
         <Input
           id="maxPrice"
-          key={`maxPrice-${formKey}`}
-          ref={maxPriceRef}
           type="number"
           min={0}
           placeholder="$999"
-          defaultValue={urlMaxPrice}
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
           onBlur={() => handlePriceBlur("maxPrice")}
           onKeyDown={(e) => handlePriceKeyDown("maxPrice", e)}
           className="w-28"

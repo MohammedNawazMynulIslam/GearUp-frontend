@@ -33,6 +33,12 @@ export interface Category {
   updatedAt: string
 }
 
+export interface GearProvider {
+  id: string
+  name: string
+  email: string
+}
+
 export interface Gear {
   id: string
   providerId: string
@@ -49,6 +55,9 @@ export interface Gear {
   totalReviews: number
   createdAt: string
   updatedAt: string
+  category?: Category
+  provider?: GearProvider
+  reviews?: Review[]
 }
 
 export interface RentalOrder {

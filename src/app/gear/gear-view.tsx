@@ -30,7 +30,7 @@ export function GearView() {
       const next = new URLSearchParams(searchParams.toString())
       next.set("page", String(p))
       startTransition(() => {
-        router.replace(`${pathname}?${next.toString()}`, { scroll: false })
+        router.push(`${pathname}?${next.toString()}`, { scroll: false })
       })
     },
     [router, pathname, searchParams]
