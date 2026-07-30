@@ -43,7 +43,7 @@ export interface Gear {
   pricePerDay: number
   stock: number
   images: string[]
-  specifications: Record<string, unknown> | null
+  specifications: string | null
   isAvailable: boolean
   averageRating: number
   totalReviews: number

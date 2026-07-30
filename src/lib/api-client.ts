@@ -1,4 +1,4 @@
-import { ApiErrorPayload, ApiResponse } from "@/types"
+import { ApiErrorPayload, ApiResponse, PaginationMeta } from "@/types"
 import { getAuthToken } from "./auth"
 
 export class ApiError extends Error {
@@ -18,7 +18,7 @@ async function request<T>(
   path: string,
   body?: unknown
 ): Promise<T | null> {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}${path}`
+  const url = path
 
   const headers: Record<string, string> = {}
   const token = getAuthToken()
@@ -49,6 +49,42 @@ async function request<T>(
   return json.data
 }
 
+async function requestPaginated<T>(
+  method: string,
+  path: string,
+  body?: unknown
+): Promise<{ items: T[]; meta: PaginationMeta } | null> {
+  const url = path
+
+  const headers: Record<string, string> = {}
+  const token = getAuthToken()
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`
+  }
+
+  if (body !== undefined) {
+    headers["Content-Type"] = "application/json"
+  }
+
+  const res = await fetch(url, {
+    method,
+    headers,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  })
+
+  if (res.status === 204) {
+    return null
+  }
+
+  const json: ApiResponse<T[]> = await res.json()
+
+  if (!res.ok) {
+    throw new ApiError(res.status, json as unknown as ApiErrorPayload)
+  }
+
+  return { items: json.data, meta: json.meta as PaginationMeta }
+}
+
 export const apiClient = {
   get<T>(path: string): Promise<T | null> {
     return request<T>("GET", path)
@@ -68,5 +104,9 @@ export const apiClient = {
 
   delete<T>(path: string): Promise<T | null> {
     return request<T>("DELETE", path)
+  },
+
+  getPaginated<T>(path: string): Promise<{ items: T[]; meta: PaginationMeta } | null> {
+    return requestPaginated<T>("GET", path)
   },
 }
