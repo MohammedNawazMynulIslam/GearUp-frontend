@@ -98,7 +98,7 @@ export default function EditGearPage() {
         }}
         onSubmit={onSubmit}
         isPending={updateMutation.isPending}
-        submitLabel="Save changes"
+        submitLabel="Update"
       />
     </div>
   )

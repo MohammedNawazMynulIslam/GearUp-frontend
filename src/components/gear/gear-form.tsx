@@ -199,7 +199,7 @@ export function GearForm({ defaultValues, onSubmit, isPending, submitLabel }: Ge
         />
 
         <Button type="submit" variant="accent" className="w-full sm:w-auto" disabled={isPending}>
-          {isPending ? "Saving…" : submitLabel}
+          {isPending ? "Updating…" : submitLabel}
         </Button>
       </FieldGroup>
     </form>
