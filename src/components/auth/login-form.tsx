@@ -14,6 +14,7 @@ import type { Role } from "@/types"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import {
   Field,
   FieldLabel,
@@ -84,10 +85,9 @@ export default function LoginForm() {
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input
+              <PasswordInput
                 {...field}
                 id="password"
-                type="password"
                 placeholder="Your password"
                 autoComplete="current-password"
                 aria-invalid={fieldState.invalid}

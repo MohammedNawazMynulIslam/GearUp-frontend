@@ -2,6 +2,7 @@
 
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
@@ -17,6 +18,7 @@ import type { Role } from "@/types"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import {
   Field,
   FieldLabel,
@@ -36,20 +38,21 @@ export default function RegisterForm() {
   const { refresh } = useAuth()
   const router = useRouter()
 
-  const form = useForm<RegisterInput>({
+  const form = useForm<z.input<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      confirmPassword: "",
-      role: "CUSTOMER",
+      phone: "",
+      address: "",
+      role: "",
     },
   })
 
-  async function onSubmit(data: RegisterInput) {
+  async function onSubmit(data: z.input<typeof registerSchema>) {
     try {
-      await registerMutation.mutateAsync(data)
+      await registerMutation.mutateAsync(data as RegisterInput)
       refresh()
       toast.success("Account created! Welcome to GearUp.")
       const user = getCurrentUser()
@@ -115,11 +118,10 @@ export default function RegisterForm() {
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input
+              <PasswordInput
                 {...field}
                 id="password"
-                type="password"
-                placeholder="At least 8 characters"
+                placeholder="At least 6 characters"
                 autoComplete="new-password"
                 aria-invalid={fieldState.invalid}
               />
@@ -131,19 +133,37 @@ export default function RegisterForm() {
         />
 
         <Controller
-          name="confirmPassword"
+          name="phone"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="confirmPassword">
-                Confirm password
-              </FieldLabel>
+              <FieldLabel htmlFor="phone">Phone</FieldLabel>
               <Input
                 {...field}
-                id="confirmPassword"
-                type="password"
-                placeholder="Repeat your password"
-                autoComplete="new-password"
+                id="phone"
+                type="tel"
+                placeholder="Your phone number"
+                autoComplete="tel"
+                aria-invalid={fieldState.invalid}
+                maxLength={13}
+              />
+              {fieldState.invalid && (
+                <FieldError errors={[fieldState.error]} />
+              )}
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="address"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="address">Address</FieldLabel>
+              <Input
+                {...field}
+                id="address"
+                placeholder="Your address"
                 aria-invalid={fieldState.invalid}
               />
               {fieldState.invalid && (

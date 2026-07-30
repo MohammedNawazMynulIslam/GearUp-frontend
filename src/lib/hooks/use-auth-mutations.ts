@@ -17,10 +17,8 @@ interface LoginResponse {
 
 export function useRegister() {
   return useMutation({
-    mutationFn: (data: RegisterInput) => {
-      const { confirmPassword, ...payload } = data
-      return apiClient.post<AuthTokens>("/api/auth/register", payload)
-    },
+    mutationFn: (data: RegisterInput) =>
+      apiClient.post<AuthTokens>("/api/auth/register", data),
     onSuccess: (data) => {
       if (data?.accessToken) {
         setAuthToken(data.accessToken)
