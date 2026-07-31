@@ -90,15 +90,26 @@ export default function ProviderDashboardPage() {
             Manage your gear listings and rental business
           </p>
         </div>
-        <Button
-          variant="accent"
-          size="sm"
-          nativeButton={false}
-          render={<Link href="/dashboard/provider/gear" />}
-        >
-          Manage gear
-          <ArrowRight className="size-4" />
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            nativeButton={false}
+            render={<Link href="/dashboard/provider/orders" />}
+          >
+            View orders
+            <ArrowRight className="size-4" />
+          </Button>
+          <Button
+            variant="accent"
+            size="sm"
+            nativeButton={false}
+            render={<Link href="/dashboard/provider/gear" />}
+          >
+            Manage gear
+            <ArrowRight className="size-4" />
+          </Button>
+        </div>
       </div>
 
       <Separator className="mb-8" />

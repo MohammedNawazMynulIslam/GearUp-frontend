@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api-client"
-import type { PaginatedResponse, RentalOrder } from "@/types"
+import type { OrderStatus, PaginatedResponse, RentalOrder } from "@/types"
 
 export interface ProviderOrderListParams {
   page?: number
@@ -25,5 +25,25 @@ export function useProviderOrders(params: ProviderOrderListParams = {}) {
       apiClient.getPaginated<RentalOrder>(
         `/api/provider/orders${buildQueryString(params)}`
       ),
+  })
+}
+
+export function useUpdateProviderOrder() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      orderId,
+      orderStatus,
+    }: {
+      orderId: string
+      orderStatus: OrderStatus
+    }) =>
+      apiClient.patch<RentalOrder>(`/api/provider/orders/${orderId}`, {
+        orderStatus,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["provider-orders"] })
+    },
   })
 }

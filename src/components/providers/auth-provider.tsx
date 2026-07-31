@@ -41,7 +41,10 @@ export default function AuthProvider({
   }, [])
 
   useEffect(() => {
-    refresh()
+    const id = setTimeout(() => {
+      refresh()
+    }, 0)
+    return () => clearTimeout(id)
   }, [refresh])
 
   const logout = useCallback(() => {
