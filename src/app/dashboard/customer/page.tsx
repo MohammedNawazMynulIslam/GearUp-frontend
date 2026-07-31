@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import {
   Package,
@@ -27,11 +28,12 @@ import {
   TableCell,
 } from "@/components/ui/table"
 import { RentalStatusBadge } from "@/components/rentals/rental-status-badge"
+import { ReviewForm } from "@/components/reviews/review-form"
 import { useAuth } from "@/components/providers/auth-provider"
 import { useRentals } from "@/lib/hooks/use-rentals"
 import { usePayments } from "@/lib/hooks/use-payments"
 import { formatCurrency, formatDate } from "@/lib/utils"
-import type { OrderStatus, PaymentStatus } from "@/types"
+import type { OrderStatus, PaymentStatus, RentalOrder } from "@/types"
 
 const paymentStatusLabel: Record<PaymentStatus, string> = {
   PENDING: "Pending",
@@ -43,19 +45,13 @@ const paymentStatusLabel: Record<PaymentStatus, string> = {
 function nextActionForStatus(
   status: OrderStatus,
   orderId: string
-): { label: string; href: string; variant: "accent" | "outline" } | null {
+): { label: string; href: string; variant: "accent" } | null {
   switch (status) {
     case "CONFIRMED":
       return {
         label: "Pay Now",
         href: `/dashboard/customer/orders/${orderId}/pay`,
         variant: "accent",
-      }
-    case "RETURNED":
-      return {
-        label: "Leave Review",
-        href: `/dashboard/customer/orders/${orderId}/review`,
-        variant: "outline",
       }
     default:
       return null
@@ -66,6 +62,7 @@ export default function CustomerDashboardPage() {
   const { user } = useAuth()
   const rentals = useRentals()
   const payments = usePayments()
+  const [reviewOrder, setReviewOrder] = useState<RentalOrder | null>(null)
 
   const rentalsLoading = rentals.isLoading
   const rentalsError = rentals.error
@@ -159,7 +156,15 @@ export default function CustomerDashboardPage() {
                             <RentalStatusBadge status={order.orderStatus} />
                           </TableCell>
                           <TableCell className="text-right">
-                            {action ? (
+                            {order.orderStatus === "RETURNED" ? (
+                              <Button
+                                variant="outline"
+                                size="xs"
+                                onClick={() => setReviewOrder(order)}
+                              >
+                                Leave Review
+                              </Button>
+                            ) : action ? (
                               <Button
                                 variant={action.variant}
                                 size="xs"
@@ -258,6 +263,20 @@ export default function CustomerDashboardPage() {
           </Card>
         </section>
       </div>
+
+      <ReviewForm
+        key={reviewOrder?.id ?? "closed"}
+        open={!!reviewOrder}
+        onOpenChange={(open) => {
+          if (!open) setReviewOrder(null)
+        }}
+        items={
+          reviewOrder?.items?.map((item) => ({
+            gearId: item.gearId,
+            title: item.gear?.title ?? item.gearId,
+          })) ?? []
+        }
+      />
     </div>
   )
 }
