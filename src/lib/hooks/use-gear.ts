@@ -42,4 +42,44 @@ export function useGearDetail(id: string) {
   })
 }
 
+async function fetchAllGearForProvider(providerId: string): Promise<Gear[] | null> {
+  const pageSize = 100
+  let page = 1
+  let totalPage = 1
+  const items: Gear[] = []
+
+  while (page <= totalPage) {
+    const res = await apiClient.getPaginated<Gear>(
+      `/api/gear?page=${page}&limit=${pageSize}`
+    )
+    if (!res) return null
+    items.push(...res.items.filter((gear) => gear.providerId === providerId))
+    totalPage = res.meta.totalPage
+    page += 1
+  }
+
+  return items
+}
+
+export function useProviderGear(providerId: string, params: GearListParams = {}) {
+  const page = params.page ?? 1
+  const limit = params.limit ?? 12
+
+  return useQuery({
+    queryKey: ["gear", "provider", providerId, params],
+    queryFn: async (): Promise<PaginatedResponse<Gear> | null> => {
+      const all = await fetchAllGearForProvider(providerId)
+      if (!all) return null
+      const total = all.length
+      const totalPage = total === 0 ? 0 : Math.ceil(total / limit)
+      const start = (page - 1) * limit
+      return {
+        items: all.slice(start, start + limit),
+        meta: { page, limit, total, totalPage },
+      }
+    },
+    enabled: !!providerId,
+  })
+}
+
 export { useCategories } from "@/lib/hooks/use-categories"

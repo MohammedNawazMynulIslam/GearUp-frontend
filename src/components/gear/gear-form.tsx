@@ -1,8 +1,8 @@
 "use client"
 
 import { useForm, Controller } from "react-hook-form"
+import type { Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -23,20 +23,9 @@ import {
   FieldGroup,
 } from "@/components/ui/field"
 import { useCategories } from "@/lib/hooks/use-gear"
+import { gearSchema, type GearFormValues } from "@/lib/schemas/gear"
 
-const gearSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  brand: z.string().min(1, "Brand is required"),
-  categoryId: z.string().min(1, "Category is required"),
-  pricePerDay: z.coerce.number().min(0.01, "Price must be at least $0.01"),
-  stock: z.coerce.number().int().min(0, "Stock cannot be negative"),
-  images: z.string().min(1, "At least one image URL is required"),
-  specifications: z.string().optional(),
-  isAvailable: z.boolean(),
-})
-
-export type GearFormValues = z.infer<typeof gearSchema>
+export type { GearFormValues } from "@/lib/schemas/gear"
 
 interface GearFormProps {
   defaultValues?: Partial<GearFormValues>
@@ -49,7 +38,7 @@ export function GearForm({ defaultValues, onSubmit, isPending, submitLabel }: Ge
   const { data: categories = [] } = useCategories()
 
   const form = useForm<GearFormValues>({
-    resolver: zodResolver(gearSchema) as any,
+    resolver: zodResolver(gearSchema) as Resolver<GearFormValues>,
     defaultValues: {
       title: "",
       description: "",
