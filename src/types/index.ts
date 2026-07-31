@@ -75,6 +75,12 @@ export interface RentalOrder {
   notes: string | null
   createdAt: string
   updatedAt: string
+  customer?: {
+    id: string
+    name: string
+    email: string
+  }
+  items?: RentalItem[]
 }
 
 export interface RentalItem {
@@ -83,6 +89,15 @@ export interface RentalItem {
   gearId: string
   quantity: number
   pricePerDay: number
+  createdAt?: string
+  gear?: {
+    id: string
+    title: string
+    brand: string
+    pricePerDay: number
+    stock: number
+    providerId: string
+  }
 }
 
 export interface Payment {
@@ -95,6 +110,15 @@ export interface Payment {
   paidAt: string | null
   createdAt: string
   updatedAt: string
+  order?: {
+    id: string
+    customerId: string
+    totalAmount: number
+    orderStatus: OrderStatus
+    paymentStatus: PaymentStatus
+    startDate: string
+    endDate: string
+  }
 }
 
 export interface Review {
@@ -130,4 +154,25 @@ export interface ApiErrorPayload {
   success: false
   message: string
   errors?: unknown
+}
+
+export interface CreatePaymentResponse {
+  paymentId: string
+  sessionId: string
+  transactionId: string
+  url: string
+  amount: number
+  currency: string
+  status: PaymentStatus
+  provider: PaymentProvider
+}
+
+export interface PaymentSessionStatus {
+  sessionId: string
+  paymentId: string
+  orderId: string
+  amount: number
+  status: PaymentStatus
+  paidAt: string | null
+  orderStatus: OrderStatus
 }

@@ -3,7 +3,9 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, ImageIcon, Star, User } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { ArrowLeft, ImageIcon, Star, User, Loader2 } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,6 +13,9 @@ import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useGearDetail } from "@/lib/hooks/use-gear"
+import { useCreateRental } from "@/lib/hooks/use-rental-mutations"
+import { useAuth } from "@/components/providers/auth-provider"
+import { ApiError } from "@/lib/api-client"
 import { cn, formatCurrency } from "@/lib/utils"
 import type { Gear } from "@/types"
 
@@ -136,7 +141,60 @@ function SpecsTable({ gear }: { gear: Gear }) {
 }
 
 function RentPanel({ gear }: { gear: Gear }) {
+  const router = useRouter()
+  const { user } = useAuth()
+  const createRental = useCreateRental()
+
   const today = new Date().toISOString().split("T")[0]
+  const [fromDate, setFromDate] = useState(today)
+  const [toDate, setToDate] = useState("")
+  const [pickupAddress, setPickupAddress] = useState("")
+  const [quantity, setQuantity] = useState(1)
+
+  async function handleRentNow() {
+    if (!user) {
+      router.push(`/auth/login?redirect=/gear/${gear.id}`)
+      return
+    }
+
+    if (!fromDate || !toDate) {
+      toast.error("Please select both start and end dates.")
+      return
+    }
+
+    if (new Date(toDate) <= new Date(fromDate)) {
+      toast.error("End date must be after start date.")
+      return
+    }
+
+    if (!pickupAddress.trim()) {
+      toast.error("Please enter a pickup address.")
+      return
+    }
+
+    try {
+      const rental = await createRental.mutateAsync({
+        startDate: fromDate,
+        endDate: toDate,
+        pickupAddress: pickupAddress.trim(),
+        items: [{ gearId: gear.id, quantity }],
+      })
+
+      if (!rental) {
+        toast.error("Failed to create rental. Please try again.")
+        return
+      }
+
+      toast.success("Rental created! Redirecting to payment…")
+      router.push(`/dashboard/customer/orders/${rental.id}/pay`)
+    } catch (error) {
+      if (error instanceof ApiError) {
+        toast.error(error.payload.message)
+      } else {
+        toast.error("Something went wrong. Please try again.")
+      }
+    }
+  }
 
   return (
     <Card>
@@ -156,25 +214,67 @@ function RentPanel({ gear }: { gear: Gear }) {
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="rent-from">From</Label>
-            <Input id="rent-from" type="date" min={today} defaultValue={today} />
+            <Input
+              id="rent-from"
+              type="date"
+              min={today}
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+            />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="rent-to">To</Label>
-            <Input id="rent-to" type="date" min={today} />
+            <Input
+              id="rent-to"
+              type="date"
+              min={fromDate || today}
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+            />
           </div>
         </div>
 
-        <div className="group relative w-full">
-          <Button variant="accent" className="w-full" disabled>
-            Rent now
-          </Button>
-          <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100">
-            <div className="whitespace-nowrap rounded-md bg-foreground px-3 py-1.5 text-xs text-background shadow-md">
-              Checkout flow coming soon
-              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-foreground" />
-            </div>
-          </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="pickup-address">Pickup address</Label>
+          <Input
+            id="pickup-address"
+            type="text"
+            placeholder="e.g. 123 Main St"
+            value={pickupAddress}
+            onChange={(e) => setPickupAddress(e.target.value)}
+          />
         </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="quantity">Quantity</Label>
+          <Input
+            id="quantity"
+            type="number"
+            min={1}
+            max={gear.stock}
+            value={quantity}
+            onChange={(e) => setQuantity(Math.min(gear.stock, Math.max(1, Number(e.target.value))))}
+          />
+          <span className="text-xs text-muted-foreground">
+            {gear.stock} available in stock
+          </span>
+        </div>
+
+        <Button
+          variant="accent"
+          className="w-full"
+          disabled={createRental.isPending}
+          onClick={handleRentNow}
+        >
+          {createRental.isPending ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              Creating rental…
+            </>
+          ) : (
+            "Rent now"
+          )}
+        </Button>
       </CardContent>
     </Card>
   )
