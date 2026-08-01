@@ -21,10 +21,10 @@ export function GearCard({ gear, variant = "public", onDelete }: GearCardProps) 
   const imageSrc = gear.images?.[0]
 
   return (
-    <Card className="group relative flex flex-col overflow-hidden rounded-lg border-border/70 shadow-sm shadow-black/[0.03] transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/[0.07]">
+    <Card className="group relative flex flex-col overflow-hidden rounded-lg border-border/70 shadow-sm shadow-black/3 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/[0.07]">
       <Link href={`/gear/${gear.id}`} className="absolute inset-0 z-10" aria-label={gear.title} />
 
-      <CardHeader className="relative aspect-[4/3] overflow-hidden bg-muted p-0">
+      <CardHeader className="relative aspect-4/3 overflow-hidden bg-muted p-0">
         {imageSrc && !imgError ? (
           <Image
             src={imageSrc}

@@ -87,7 +87,7 @@ export function GearFilters() {
   }
 
   return (
-    <div className="rounded-lg border bg-card p-4 shadow-sm shadow-black/[0.03]">
+    <div className="rounded-lg border bg-card p-4 shadow-sm shadow-black/3">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_0.8fr_1fr_1fr_auto] lg:items-end">
       <div className="flex min-w-0 flex-col gap-1.5">
         <Label htmlFor="category">Category</Label>
