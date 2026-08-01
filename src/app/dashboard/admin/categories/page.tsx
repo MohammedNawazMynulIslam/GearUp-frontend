@@ -1,8 +1,16 @@
 "use client"
 
+import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Plus, Tags, AlertCircle, Check } from "lucide-react"
+import {
+  Plus,
+  Tags,
+  AlertCircle,
+  Check,
+  Pencil,
+  Trash2,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -15,13 +23,26 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog"
+import {
   Field,
   FieldLabel,
   FieldError,
   FieldGroup,
 } from "@/components/ui/field"
 import { useCategories } from "@/lib/hooks/use-gear"
-import { useCreateCategory } from "@/lib/hooks/use-category-mutations"
+import {
+  useCreateCategory,
+  useUpdateCategory,
+  useDeleteCategory,
+} from "@/lib/hooks/use-category-mutations"
 import {
   categorySchema,
   type CategoryFormValues,
@@ -29,12 +50,59 @@ import {
 import { toast } from "sonner"
 import { ApiError } from "@/lib/api-client"
 import { formatDate } from "@/lib/utils"
+import type { Category } from "@/types"
+
+function CategoryFormFields({ form }: { form: ReturnType<typeof useForm<CategoryFormValues>> }) {
+  return (
+    <FieldGroup>
+      <Controller
+        name="name"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="name">Name</FieldLabel>
+            <Input
+              {...field}
+              id="name"
+              placeholder="e.g. Tents"
+              aria-invalid={fieldState.invalid}
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="description"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="description">Description</FieldLabel>
+            <Textarea
+              {...field}
+              id="description"
+              rows={3}
+              placeholder="Optional short description"
+              aria-invalid={fieldState.invalid}
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+    </FieldGroup>
+  )
+}
 
 export default function AdminCategoriesPage() {
   const { data: categories, isLoading, error, refetch } = useCategories()
   const createMutation = useCreateCategory()
+  const updateMutation = useUpdateCategory()
+  const deleteMutation = useDeleteCategory()
 
-  const form = useForm<CategoryFormValues>({
+  const [editing, setEditing] = useState<Category | null>(null)
+  const [deleting, setDeleting] = useState<Category | null>(null)
+
+  const createForm = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
@@ -42,16 +110,54 @@ export default function AdminCategoriesPage() {
     },
   })
 
-  async function onSubmit(data: CategoryFormValues) {
+  const editForm = useForm<CategoryFormValues>({
+    resolver: zodResolver(categorySchema),
+    values: {
+      name: editing?.name ?? "",
+      description: editing?.description ?? "",
+    },
+  })
+
+  async function handleCreate(data: CategoryFormValues) {
     try {
       await createMutation.mutateAsync(data)
       toast.success("Category added")
-      form.reset()
+      createForm.reset()
     } catch (err) {
       if (err instanceof ApiError) {
         toast.error(err.payload.message)
       } else {
         toast.error("Failed to add category")
+      }
+    }
+  }
+
+  async function handleUpdate(data: CategoryFormValues) {
+    if (!editing) return
+    try {
+      await updateMutation.mutateAsync({ id: editing.id, data })
+      toast.success("Category updated")
+      setEditing(null)
+    } catch (err) {
+      if (err instanceof ApiError) {
+        toast.error(err.payload.message)
+      } else {
+        toast.error("Failed to update category")
+      }
+    }
+  }
+
+  async function handleDelete() {
+    if (!deleting) return
+    try {
+      await deleteMutation.mutateAsync(deleting.id)
+      toast.success("Category deleted")
+      setDeleting(null)
+    } catch (err) {
+      if (err instanceof ApiError) {
+        toast.error(err.payload.message)
+      } else {
+        toast.error("Failed to delete category")
       }
     }
   }
@@ -107,14 +213,28 @@ export default function AdminCategoriesPage() {
                           {category.description}
                         </p>
                       )}
+                      <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                        /{category.slug} · {formatDate(category.createdAt)}
+                      </p>
                     </div>
-                    <div className="shrink-0 text-right">
-                      <p className="font-mono text-xs text-muted-foreground">
-                        /{category.slug}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDate(category.createdAt)}
-                      </p>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => setEditing(category)}
+                        aria-label={`Edit ${category.name}`}
+                      >
+                        <Pencil />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => setDeleting(category)}
+                        aria-label={`Delete ${category.name}`}
+                      >
+                        <Trash2 />
+                      </Button>
                     </div>
                   </li>
                 ))}
@@ -142,67 +262,92 @@ export default function AdminCategoriesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-              <FieldGroup>
-                <Controller
-                  name="name"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="name">Name</FieldLabel>
-                      <Input
-                        {...field}
-                        id="name"
-                        placeholder="e.g. Tents"
-                        aria-invalid={fieldState.invalid}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-
-                <Controller
-                  name="description"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="description">Description</FieldLabel>
-                      <Textarea
-                        {...field}
-                        id="description"
-                        rows={3}
-                        placeholder="Optional short description"
-                        aria-invalid={fieldState.invalid}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-
-                <Button
-                  type="submit"
-                  variant="accent"
-                  className="w-full sm:w-auto"
-                  disabled={createMutation.isPending}
-                >
-                  {createMutation.isPending ? (
-                    "Adding…"
-                  ) : (
-                    <>
-                      <Check className="size-4" />
-                      Add category
-                    </>
-                  )}
-                </Button>
-              </FieldGroup>
+            <form
+              onSubmit={createForm.handleSubmit(handleCreate)}
+              className="space-y-5"
+            >
+              <CategoryFormFields form={createForm} />
+              <Button
+                type="submit"
+                variant="accent"
+                className="w-full sm:w-auto"
+                disabled={createMutation.isPending}
+              >
+                {createMutation.isPending ? (
+                  "Adding…"
+                ) : (
+                  <>
+                    <Check className="size-4" />
+                    Add category
+                  </>
+                )}
+              </Button>
             </form>
           </CardContent>
         </Card>
       </div>
+
+      <Dialog
+        open={!!editing}
+        onOpenChange={(open) => {
+          if (!open) setEditing(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit category</DialogTitle>
+            <DialogDescription>Update the details for this category</DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={editForm.handleSubmit(handleUpdate)}
+            id="edit-category-form"
+            className="space-y-5"
+          >
+            <CategoryFormFields form={editForm} />
+          </form>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline">Cancel</Button>} />
+            <Button
+              type="submit"
+              form="edit-category-form"
+              variant="accent"
+              disabled={updateMutation.isPending}
+            >
+              {updateMutation.isPending ? "Saving…" : "Save changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!deleting}
+        onOpenChange={(open) => {
+          if (!open) setDeleting(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete category</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete{" "}
+              <span className="font-medium text-foreground">
+                {deleting?.name}
+              </span>
+              ? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline">Cancel</Button>} />
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Deleting…" : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
