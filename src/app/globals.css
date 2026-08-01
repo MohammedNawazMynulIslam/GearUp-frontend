@@ -66,26 +66,26 @@
 }
 
 :root {
-  --background: #F1F3EE;
-  --foreground: #182018;
+  --background: #F6F7F3;
+  --foreground: #16201C;
   --card: #FFFFFF;
   --card-foreground: #182018;
   --popover: #FFFFFF;
   --popover-foreground: #182018;
-  --primary: #1F4032;
-  --primary-foreground: #F1F3EE;
+  --primary: #184333;
+  --primary-foreground: #F7FBF7;
   --primary-hover: #163024;
-  --secondary: #E3E9DC;
+  --secondary: #E6ECE4;
   --secondary-foreground: #1F4032;
-  --muted: #E7E9E1;
-  --muted-foreground: #5B6558;
-  --accent: #E2812A;
-  --accent-foreground: #241203;
-  --accent-hover: #C86E1E;
+  --muted: #EAEEE8;
+  --muted-foreground: #647067;
+  --accent: #F0A43A;
+  --accent-foreground: #241707;
+  --accent-hover: #D78B20;
   --destructive: #C4432E;
   --destructive-foreground: #FBEFEA;
-  --border: #D7DCCC;
-  --input: #D7DCCC;
+  --border: #DDE3D8;
+  --input: #CED8CC;
   --ring: #1F4032;
   --radius: 0.625rem;
   --chart-1: #1F4032;
@@ -155,9 +155,13 @@
   }
   body {
     @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
   }
   html {
     @apply font-sans;
+  }
+  ::selection {
+    @apply bg-primary/20 text-foreground;
   }
 }
 

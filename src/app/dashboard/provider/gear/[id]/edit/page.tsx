@@ -49,7 +49,7 @@ export default function EditGearPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
         <Skeleton className="mb-4 h-8 w-32" />
         <Skeleton className="mb-6 h-8 w-48" />
         <div className="space-y-4">
@@ -66,7 +66,7 @@ export default function EditGearPage() {
 
   if (!gear) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-8 text-center sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl px-4 py-10 text-center sm:px-6 lg:px-8">
         <p className="text-muted-foreground">Gear not found</p>
         <Button variant="outline" size="sm" className="mt-4" nativeButton={false} render={<Link href="/dashboard/provider/gear" />}>
           Back to gear
@@ -76,13 +76,18 @@ export default function EditGearPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
-      <Button variant="ghost" size="sm" className="mb-4" nativeButton={false} render={<Link href="/dashboard/provider/gear" />}>
-        <ChevronLeft className="size-4" />
-        Back to gear
-      </Button>
+    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mb-6">
+        <Button variant="ghost" size="sm" className="-ml-2 mb-4" nativeButton={false} render={<Link href="/dashboard/provider/gear" />}>
+          <ChevronLeft className="size-4" />
+          Back to gear
+        </Button>
 
-      <h1 className="mb-6 font-display text-2xl font-bold">Edit gear</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Edit gear</h1>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          Keep your listing details, availability, and rental information accurate.
+        </p>
+      </div>
 
       <GearForm
         defaultValues={{

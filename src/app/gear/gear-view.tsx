@@ -41,10 +41,10 @@ export function GearView() {
   const meta = data?.meta
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-bold">Browse Gear</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mb-6 flex flex-col gap-2 sm:mb-8">
+        <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Browse Gear</h1>
+        <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
           Find the perfect gear for your next adventure
         </p>
       </div>

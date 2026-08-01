@@ -39,12 +39,12 @@ function StatCard({
   hasError,
 }: StatCardProps) {
   return (
-    <Card>
+    <Card className="rounded-lg border-border/80 shadow-sm shadow-black/[0.03]">
       <CardHeader>
-        <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
-          <Icon className="size-5 text-primary" />
+        <div className="flex size-11 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+          <Icon className="size-5 text-primary-foreground" />
         </div>
-        <CardTitle className="mt-2">{label}</CardTitle>
+        <CardTitle className="mt-2 text-lg">{label}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -56,7 +56,7 @@ function StatCard({
             Unavailable
           </div>
         ) : (
-          <p className="font-display text-3xl font-bold">{value}</p>
+          <p className="font-display text-4xl font-bold tracking-tight">{value}</p>
         )}
       </CardContent>
     </Card>
@@ -70,19 +70,19 @@ export default function AdminDashboardPage() {
   const rentals = useAdminRentals({ limit: 1 })
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="font-display text-2xl font-bold">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mb-8 rounded-lg border bg-card p-6 shadow-sm shadow-black/[0.03]">
+        <h1 className="font-display text-3xl font-bold tracking-tight">
           Admin{user?.email ? `, ${user.email}` : ""}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
           Platform overview and moderation tools
         </p>
       </div>
 
-      <Separator className="mb-8" />
+      <Separator className="mb-8 hidden" />
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard
           icon={Users}
           label="Total users"

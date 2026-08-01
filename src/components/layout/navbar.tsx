@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Tent, LogOut, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -22,21 +22,34 @@ import type { Role } from "@/types"
 export default function Navbar() {
   const { user, isLoading, logout } = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
+  const isDashboard = pathname.startsWith("/dashboard")
 
   const initial = user?.email?.charAt(0).toUpperCase() ?? "?"
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background">
-      <div className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-border bg-card/95 shadow-sm shadow-black/[0.02] backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:gap-6 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold text-primary">
           <Tent className="size-5" aria-hidden="true" />
           GearUp
         </Link>
 
-        <nav className="flex items-center gap-1">
+        <nav className="flex min-w-0 items-center gap-1">
           <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/gear" />}>
             Browse gear
           </Button>
+          {user && !isDashboard && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden sm:inline-flex"
+              nativeButton={false}
+              render={<Link href={dashboardPathForRole(user.role as Role)} />}
+            >
+              Dashboard
+            </Button>
+          )}
         </nav>
 
         <div className="ml-auto flex items-center gap-2">

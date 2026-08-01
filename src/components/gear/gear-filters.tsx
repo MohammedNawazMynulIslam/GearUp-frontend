@@ -87,11 +87,12 @@ export function GearFilters() {
   }
 
   return (
-    <div className="flex flex-wrap items-end gap-4">
-      <div className="flex flex-col gap-1.5">
+    <div className="rounded-lg border bg-card p-4 shadow-sm shadow-black/[0.03]">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_0.8fr_1fr_1fr_auto] lg:items-end">
+      <div className="flex min-w-0 flex-col gap-1.5">
         <Label htmlFor="category">Category</Label>
         <Select value={currentCategory || "all"} onValueChange={handleCategoryChange}>
-          <SelectTrigger className="w-44" id="category">
+          <SelectTrigger className="w-full" id="category">
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
@@ -105,7 +106,7 @@ export function GearFilters() {
         </Select>
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex min-w-0 flex-col gap-1.5">
         <Label htmlFor="minPrice">Min price</Label>
         <Input
           id="minPrice"
@@ -116,11 +117,11 @@ export function GearFilters() {
           onChange={(e) => setMinPrice(e.target.value)}
           onBlur={() => handlePriceBlur("minPrice")}
           onKeyDown={(e) => handlePriceKeyDown("minPrice", e)}
-          className="w-28"
+          className="w-full"
         />
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex min-w-0 flex-col gap-1.5">
         <Label htmlFor="maxPrice">Max price</Label>
         <Input
           id="maxPrice"
@@ -131,38 +132,39 @@ export function GearFilters() {
           onChange={(e) => setMaxPrice(e.target.value)}
           onBlur={() => handlePriceBlur("maxPrice")}
           onKeyDown={(e) => handlePriceKeyDown("maxPrice", e)}
-          className="w-28"
+          className="w-full"
         />
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex min-w-0 flex-col gap-1.5">
         <Label htmlFor="availableFrom">Available from</Label>
         <Input
           id="availableFrom"
           type="date"
           value={currentAvailableFrom}
           onChange={(e) => handleDateChange("availableFrom", e.target.value)}
-          className="w-44"
+          className="w-full"
         />
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex min-w-0 flex-col gap-1.5">
         <Label htmlFor="availableTo">Available to</Label>
         <Input
           id="availableTo"
           type="date"
           value={currentAvailableTo}
           onChange={(e) => handleDateChange("availableTo", e.target.value)}
-          className="w-44"
+          className="w-full"
         />
       </div>
 
       {hasActiveFilters && (
-        <Button variant="ghost" size="sm" onClick={clearFilters}>
+        <Button variant="ghost" size="sm" className="w-full lg:w-auto" onClick={clearFilters}>
           <RotateCcw className="size-3" />
           Clear
         </Button>
       )}
+      </div>
     </div>
   )
 }

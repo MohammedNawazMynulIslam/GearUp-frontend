@@ -112,10 +112,10 @@ export default function ProviderOrdersPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-bold">Orders</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mb-6 rounded-lg border bg-card p-5 shadow-sm shadow-black/[0.03]">
+        <h1 className="font-display text-3xl font-bold tracking-tight">Orders</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
           Manage incoming rental orders for your gear
         </p>
       </div>
@@ -128,6 +128,7 @@ export default function ProviderOrdersPage() {
           </Button>
         </div>
       ) : isLoading ? (
+        <div className="overflow-hidden rounded-lg border bg-card shadow-sm shadow-black/[0.03]">
         <Table>
           <TableHeader>
             <TableRow>
@@ -144,8 +145,9 @@ export default function ProviderOrdersPage() {
             <SkeletonRows />
           </TableBody>
         </Table>
+        </div>
       ) : orders.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-20 text-center">
           <Package className="mb-4 size-12 text-muted-foreground/50" />
           <p className="text-base font-medium text-foreground">No orders yet</p>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -153,7 +155,7 @@ export default function ProviderOrdersPage() {
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-hidden rounded-lg border bg-card shadow-sm shadow-black/[0.03]">
           <Table>
             <TableHeader>
               <TableRow>

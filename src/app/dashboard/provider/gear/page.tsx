@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { GearGrid } from "@/components/gear/gear-grid"
 import {
   Table,
   TableHeader,
@@ -45,7 +46,7 @@ function GearThumb({ gear }: { gear: Gear }) {
   const imageSrc = gear.images?.[0]
 
   return (
-    <div className="relative size-10 shrink-0 overflow-hidden rounded-md bg-muted">
+    <div className="relative size-11 shrink-0 overflow-hidden rounded-lg bg-muted">
       {imageSrc && !imgError ? (
         <Image
           src={imageSrc}
@@ -71,28 +72,18 @@ function SkeletonRows({ count = 6 }: { count?: number }) {
         <TableRow key={i}>
           <TableCell>
             <div className="flex items-center gap-3">
-              <Skeleton className="size-10 rounded-md" />
+              <Skeleton className="size-11 rounded-lg" />
               <div className="space-y-2">
                 <Skeleton className="h-3.5 w-32" />
                 <Skeleton className="h-3 w-20" />
               </div>
             </div>
           </TableCell>
-          <TableCell>
-            <Skeleton className="h-3.5 w-20" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="h-3.5 w-14" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="h-3.5 w-10" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="h-5 w-16 rounded-full" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="h-3.5 w-14" />
-          </TableCell>
+          <TableCell><Skeleton className="h-3.5 w-20" /></TableCell>
+          <TableCell><Skeleton className="h-3.5 w-14" /></TableCell>
+          <TableCell><Skeleton className="h-3.5 w-10" /></TableCell>
+          <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
+          <TableCell><Skeleton className="h-3.5 w-14" /></TableCell>
           <TableCell>
             <div className="flex justify-end gap-2">
               <Skeleton className="h-7 w-14 rounded-md" />
@@ -133,15 +124,15 @@ export default function ProviderGearListPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mb-6 flex flex-col justify-between gap-4 rounded-lg border bg-card p-5 shadow-sm shadow-black/[0.03] sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-display text-2xl font-bold">My Gear</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="font-display text-3xl font-bold tracking-tight">My Gear</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
             Manage your rental gear inventory
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isRefetching}>
             <RefreshCw className={`size-4 ${isRefetching ? "animate-spin" : ""}`} />
             Refresh
@@ -161,13 +152,15 @@ export default function ProviderGearListPage() {
           </Button>
         </div>
       ) : isLoading ? (
-        <Table>
-          <TableBody>
-            <SkeletonRows />
-          </TableBody>
-        </Table>
+        <div className="overflow-hidden rounded-lg border bg-card shadow-sm shadow-black/[0.03]">
+          <Table>
+            <TableBody>
+              <SkeletonRows />
+            </TableBody>
+          </Table>
+        </div>
       ) : gears.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-20 text-center">
           <SearchX className="mb-4 size-12 text-muted-foreground/50" />
           <p className="text-base font-medium text-foreground">No gear yet</p>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -185,98 +178,104 @@ export default function ProviderGearListPage() {
           </Button>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Gear</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price/day</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>Availability</TableHead>
-                <TableHead>Rating</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {gears.map((gear) => (
-                <TableRow key={gear.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <GearThumb gear={gear} />
-                      <div className="min-w-0">
-                        <p className="max-w-52 truncate text-sm font-medium">
-                          {gear.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {gear.brand}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {gear.category?.name ?? gear.categoryId}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {typeof gear.pricePerDay === "number"
-                      ? formatCurrency(gear.pricePerDay * 100)
-                      : "—"}
-                  </TableCell>
-                  <TableCell>{gear.stock}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={gear.isAvailable ? "default" : "secondary"}
-                      className={cn(
-                        gear.isAvailable &&
-                          "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400"
-                      )}
-                    >
-                      {gear.isAvailable ? "Available" : "Unavailable"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Star className="size-3.5 fill-amber-400 text-amber-400" />
-                      <span className="text-sm font-medium">
-                        {gear.averageRating.toFixed(1)}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        ({gear.totalReviews})
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="xs"
-                        nativeButton={false}
-                        render={
-                          <Link href={`/dashboard/provider/gear/${gear.id}/edit`} />
-                        }
-                      >
-                        <Pencil className="size-3.5" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="xs"
-                        onClick={() => setDeleteId(gear.id)}
-                      >
-                        <Trash2 className="size-3.5" />
-                        Delete
-                      </Button>
-                    </div>
-                  </TableCell>
+        <div>
+          <div className="md:hidden">
+            <GearGrid items={gears} variant="provider" onDelete={setDeleteId} />
+          </div>
+
+          <div className="hidden overflow-hidden rounded-lg border bg-card shadow-sm shadow-black/[0.03] md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Gear</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Price/day</TableHead>
+                  <TableHead>Stock</TableHead>
+                  <TableHead>Availability</TableHead>
+                  <TableHead>Rating</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {gears.map((gear) => (
+                  <TableRow key={gear.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <GearThumb gear={gear} />
+                        <div className="min-w-0">
+                          <p className="max-w-52 truncate text-sm font-semibold">
+                            {gear.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {gear.brand}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {gear.category?.name ?? gear.categoryId}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {typeof gear.pricePerDay === "number"
+                        ? formatCurrency(gear.pricePerDay * 100)
+                        : "-"}
+                    </TableCell>
+                    <TableCell>{gear.stock}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={gear.isAvailable ? "default" : "secondary"}
+                        className={cn(
+                          gear.isAvailable &&
+                            "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400"
+                        )}
+                      >
+                        {gear.isAvailable ? "Available" : "Unavailable"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Star className="size-3.5 fill-amber-400 text-amber-400" />
+                        <span className="text-sm font-medium">
+                          {gear.averageRating.toFixed(1)}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          ({gear.totalReviews})
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          nativeButton={false}
+                          render={
+                            <Link href={`/dashboard/provider/gear/${gear.id}/edit`} />
+                          }
+                        >
+                          <Pencil className="size-3.5" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="xs"
+                          onClick={() => setDeleteId(gear.id)}
+                        >
+                          <Trash2 className="size-3.5" />
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       )}
 
       {meta && meta.totalPage > 1 && (
-        <div className="mt-8 flex items-center justify-center gap-2">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -310,7 +309,7 @@ export default function ProviderGearListPage() {
           <DialogFooter>
             <DialogClose render={<Button variant="outline">Cancel</Button>} />
             <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isPending}>
-              {deleteMutation.isPending ? "Deleting…" : "Delete"}
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>

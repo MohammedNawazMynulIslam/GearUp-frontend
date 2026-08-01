@@ -21,7 +21,7 @@ export function GearCard({ gear, variant = "public", onDelete }: GearCardProps) 
   const imageSrc = gear.images?.[0]
 
   return (
-    <Card className="group relative flex flex-col overflow-hidden transition-shadow hover:shadow-md">
+    <Card className="group relative flex flex-col overflow-hidden rounded-lg border-border/70 shadow-sm shadow-black/[0.03] transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/[0.07]">
       <Link href={`/gear/${gear.id}`} className="absolute inset-0 z-10" aria-label={gear.title} />
 
       <CardHeader className="relative aspect-[4/3] overflow-hidden bg-muted p-0">
@@ -41,44 +41,44 @@ export function GearCard({ gear, variant = "public", onDelete }: GearCardProps) 
         )}
       </CardHeader>
 
-      <CardContent className="flex flex-1 flex-col gap-2 p-4">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="line-clamp-1 font-display text-sm font-medium">{gear.title}</h3>
-          <p className="shrink-0 font-display text-sm font-semibold text-primary">
+      <CardContent className="flex flex-1 flex-col gap-3 p-4">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="line-clamp-1 font-display text-base font-semibold">{gear.title}</h3>
+          <p className="shrink-0 font-display text-sm font-bold text-primary">
             {typeof gear.pricePerDay === "number"
               ? formatCurrency(gear.pricePerDay * 100)
-              : "—"}
+              : "-"}
           </p>
         </div>
 
-        <p className="line-clamp-2 text-xs text-muted-foreground">{gear.description}</p>
+        <p className="line-clamp-2 text-sm leading-6 text-muted-foreground">{gear.description}</p>
 
         <div className="mt-auto flex items-center justify-between gap-2 pt-2">
-          <Badge variant="secondary" className="max-w-[50%] truncate text-[10px]">
+          <Badge variant="secondary" className="max-w-[50%] truncate text-xs">
             {gear.brand}
           </Badge>
 
           <span
             className={cn(
-              "flex items-center gap-1 text-[10px] font-medium",
+              "flex items-center gap-1 text-xs font-semibold",
               gear.isAvailable ? "text-emerald-600" : "text-muted-foreground"
             )}
           >
             {gear.isAvailable ? (
-              <CircleCheck className="size-3" />
+              <CircleCheck className="size-3.5" />
             ) : (
-              <CircleAlert className="size-3" />
+              <CircleAlert className="size-3.5" />
             )}
             {gear.isAvailable ? "Available" : "Unavailable"}
           </span>
         </div>
 
         {variant === "provider" && (
-          <div className="relative z-20 mt-2 flex gap-2 border-t pt-2">
+          <div className="relative z-20 mt-2 flex gap-2 border-t pt-3">
             <Button
               variant="outline"
               size="sm"
-              className="h-7 flex-1 gap-1 text-xs"
+              className="h-8 flex-1 gap-1 text-xs"
               nativeButton={false}
               render={<Link href={`/dashboard/provider/gear/${gear.id}/edit`} />}
             >
@@ -88,7 +88,7 @@ export function GearCard({ gear, variant = "public", onDelete }: GearCardProps) 
             <Button
               variant="destructive"
               size="sm"
-              className="h-7 flex-1 gap-1 text-xs"
+              className="h-8 flex-1 gap-1 text-xs"
               onClick={(e: React.MouseEvent) => {
                 e.preventDefault()
                 onDelete?.(gear.id)
