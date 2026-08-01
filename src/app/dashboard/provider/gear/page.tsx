@@ -6,7 +6,6 @@ import Link from "next/link"
 import {
   Plus,
   RefreshCw,
-  ChevronLeft,
   Pencil,
   Trash2,
   ImageIcon,
@@ -135,13 +134,6 @@ export default function ProviderGearListPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <Link
-        href="/dashboard/provider"
-        className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ChevronLeft className="size-4" />
-        Back to dashboard
-      </Link>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold">My Gear</h1>

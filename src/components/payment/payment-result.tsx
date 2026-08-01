@@ -15,6 +15,9 @@ import { apiClient, ApiError } from "@/lib/api-client"
 import { formatCurrency } from "@/lib/utils"
 import type { PaymentSessionStatus } from "@/types"
 
+const MAX_POLLS = 10
+const POLL_INTERVAL_MS = 3000
+
 export function PaymentResult({ mode }: { mode: "success" | "cancel" }) {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -24,34 +27,42 @@ export function PaymentResult({ mode }: { mode: "success" | "cancel" }) {
   const [data, setData] = useState<PaymentSessionStatus | null>(null)
   const [isLoading, setIsLoading] = useState(mode !== "cancel")
   const [error, setError] = useState<string | null>(null)
+  const [pollCount, setPollCount] = useState(0)
   const fetched = useRef(false)
 
-  const fetchSession = useCallback(async () => {
-    if (!sessionId) {
-      setError("Missing session ID.")
-      setIsLoading(false)
-      return
-    }
+  const fetchSession = useCallback(
+    async (options?: { silent?: boolean }) => {
+      if (!sessionId) {
+        setError("Missing session ID.")
+        setIsLoading(false)
+        return
+      }
 
-    try {
-      const result = await apiClient.get<PaymentSessionStatus>(
-        `/api/payments/success?session_id=${encodeURIComponent(sessionId)}`
-      )
-      if (result) {
-        setData(result)
-      } else {
-        setError("No data returned.")
+      if (!options?.silent) {
+        setIsLoading(true)
       }
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.payload.message)
-      } else {
-        setError("Something went wrong.")
+
+      try {
+        const result = await apiClient.get<PaymentSessionStatus>(
+          `/api/payments/success?session_id=${encodeURIComponent(sessionId)}`
+        )
+        if (result) {
+          setData(result)
+        } else {
+          setError("No data returned.")
+        }
+      } catch (err) {
+        if (err instanceof ApiError) {
+          setError(err.payload.message)
+        } else {
+          setError("Something went wrong.")
+        }
+      } finally {
+        setIsLoading(false)
       }
-    } finally {
-      setIsLoading(false)
-    }
-  }, [sessionId])
+    },
+    [sessionId]
+  )
 
   useEffect(() => {
     if (mode === "cancel") return
@@ -59,6 +70,17 @@ export function PaymentResult({ mode }: { mode: "success" | "cancel" }) {
     fetched.current = true
     fetchSession()
   }, [mode, fetchSession])
+
+  useEffect(() => {
+    if (mode === "cancel") return
+    if (data?.status !== "PENDING") return
+    if (pollCount >= MAX_POLLS) return
+    const timer = setTimeout(() => {
+      setPollCount((count) => count + 1)
+      fetchSession({ silent: true })
+    }, POLL_INTERVAL_MS)
+    return () => clearTimeout(timer)
+  }, [mode, data?.status, pollCount, fetchSession])
 
   function handleViewOrder() {
     const orderId = data?.orderId ?? orderIdParam
@@ -119,7 +141,7 @@ export function PaymentResult({ mode }: { mode: "success" | "cancel" }) {
           <OctagonXIcon className="size-12 text-destructive" />
           <p className="text-sm text-muted-foreground">{error}</p>
           <div className="flex flex-wrap items-center justify-center gap-2">
-            <Button variant="accent" onClick={fetchSession}>
+            <Button variant="accent" onClick={() => fetchSession()}>
               Try again
             </Button>
             <Button
@@ -181,7 +203,7 @@ export function PaymentResult({ mode }: { mode: "success" | "cancel" }) {
 
             {isPending && (
               <p className="text-center text-xs text-muted-foreground">
-                Your payment is being processed. The order status will update once confirmed.
+                Your payment is being processed. We are checking for confirmation automatically.
               </p>
             )}
 
@@ -189,6 +211,11 @@ export function PaymentResult({ mode }: { mode: "success" | "cancel" }) {
               <Button variant="outline" onClick={() => router.push("/gear")}>
                 Browse gear
               </Button>
+              {isPending && (
+                <Button variant="outline" onClick={() => fetchSession()}>
+                  Check payment status
+                </Button>
+              )}
               <Button variant="accent" onClick={handleViewOrder}>
                 View order
               </Button>

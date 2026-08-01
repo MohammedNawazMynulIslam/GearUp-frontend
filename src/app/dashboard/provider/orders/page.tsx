@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { ChevronLeft, ChevronRight, Package, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -114,14 +113,6 @@ export default function ProviderOrdersPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <Link
-        href="/dashboard/provider"
-        className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ChevronLeft className="size-4" />
-        Back to dashboard
-      </Link>
-
       <div className="mb-6">
         <h1 className="font-display text-2xl font-bold">Orders</h1>
         <p className="mt-1 text-sm text-muted-foreground">

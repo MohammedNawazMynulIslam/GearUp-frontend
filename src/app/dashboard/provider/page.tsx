@@ -1,11 +1,9 @@
 "use client"
 
-import Link from "next/link"
 import {
   Package,
   CalendarClock,
   Timer,
-  ArrowRight,
   AlertCircle,
   type LucideIcon,
 } from "lucide-react"
@@ -16,7 +14,6 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/components/providers/auth-provider"
@@ -81,35 +78,13 @@ export default function ProviderDashboardPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold">
-            Welcome{user?.email ? `, ${user.email}` : ""}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage your gear listings and rental business
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            nativeButton={false}
-            render={<Link href="/dashboard/provider/orders" />}
-          >
-            View orders
-            <ArrowRight className="size-4" />
-          </Button>
-          <Button
-            variant="accent"
-            size="sm"
-            nativeButton={false}
-            render={<Link href="/dashboard/provider/gear" />}
-          >
-            Manage gear
-            <ArrowRight className="size-4" />
-          </Button>
-        </div>
+      <div className="mb-8">
+        <h1 className="font-display text-2xl font-bold">
+          Welcome{user?.email ? `, ${user.email}` : ""}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Overview of your gear listings and rental business
+        </p>
       </div>
 
       <Separator className="mb-8" />

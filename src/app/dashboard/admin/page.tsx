@@ -1,11 +1,9 @@
 "use client"
 
-import Link from "next/link"
 import {
   Users,
   Package,
   ReceiptText,
-  ArrowRight,
   AlertCircle,
   type LucideIcon,
 } from "lucide-react"
@@ -16,7 +14,6 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/components/providers/auth-provider"
@@ -110,50 +107,6 @@ export default function AdminDashboardPage() {
           isLoading={rentals.isLoading}
           hasError={!!rentals.error}
         />
-      </div>
-
-      <div className="mt-10">
-        <h2 className="font-display text-lg font-semibold">Moderation</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Review and manage platform users, gear, and orders
-        </p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            {
-              href: "/dashboard/admin/users",
-              label: "Users",
-              description: "Search accounts, suspend or activate users",
-            },
-            {
-              href: "/dashboard/admin/gear",
-              label: "Gear",
-              description: "Browse all gear listings across providers",
-            },
-            {
-              href: "/dashboard/admin/orders",
-              label: "Orders",
-              description: "Review all rental orders and their status",
-            },
-          ].map((item) => (
-            <Card key={item.href}>
-              <CardHeader>
-                <CardTitle>{item.label}</CardTitle>
-                <CardDescription>{item.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  nativeButton={false}
-                  render={<Link href={item.href} />}
-                >
-                  Manage
-                  <ArrowRight className="size-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       </div>
     </div>
   )
